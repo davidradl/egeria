@@ -2,11 +2,15 @@
 /* Copyright Contributors to the ODPi Egeria project. */
 import React, { useState, useContext } from "react";
 import { GlossaryAuthorContext } from "../../contexts/GlossaryAuthorContext";
+import Delete16 from "../../images/Egeria_delete_16";
+import Edit16 from "../../images/Egeria_edit_16";
 import {
   Accordion,
   AccordionItem,
+  Button,
   DataTable,
   MultiSelect,
+  Pagination,
   TableContainer,
   Table,
   TableHead,
@@ -16,6 +20,13 @@ import {
   TableCell,
   TableHeader,
   TableBody,
+  TableToolbar,
+  TableToolbarAction,
+  TableToolbarMenu,
+  TableToolbarContent,
+  TableBatchActions,
+  TableBatchAction,
+  TableToolbarSearch,
 } from "carbon-components-react";
 
 const NodeSearch = (props) => {
@@ -23,7 +34,11 @@ const NodeSearch = (props) => {
   const glossaryAuthorContext = useContext(GlossaryAuthorContext);
 
   const [results, setResults] = useState([]);
-  const [errorMsg, setErrorMsg] = useState([]);
+  const [total, setTotal] = useState(0);
+  const [currentPage, setCurrentPage] = useState([]);
+  const [pageNumber, setPageNumber] = useState(1);
+  const [pageSize, setPageSize] = useState(10);
+  const [errorMsg, setErrorMsg] = useState();
   const mainProperties = [
     {
       key: "name",
@@ -38,18 +53,62 @@ const NodeSearch = (props) => {
       text: "Qualified Name",
     },
   ];
+
+  const paginationProps = () => ({
+    disabled: false,
+    page: pageNumber,
+    pagesUnknown: true,
+    pageInputDisabled: false,
+    backwardText: "Previous page",
+    forwardText: "Next page",
+    totalItems: total,
+    pageSize: pageSize,
+    pageSizes: [10, 50, 100],
+    itemsPerPageText: "Items per page:",
+    onChange: onPaginationChange,
+  });
+  const onPaginationChange = (paginationOptions) => {
+    console.log("onPaginationChange");
+    console.log(paginationOptions);
+    if (results && results.length > 0) {
+      const pageSize = paginationOptions.pageSize;
+      // if page = 1 and pageSize 10, currentPageStart = 1
+      // if page = 2 and pageSize 10, currentPageStart = 11
+      // if page = 2 and pageSize 10 and results.length = 15, currentPageStart = 11 , currentPageSize = 5
+
+      const currentPageStart =
+        1 + (paginationOptions.page - 1) * paginationOptions.pageSize;
+      let currentPageSize = pageSize;
+      // if the last page is not complete ensure that we only specify up the end of the what is actually there in the results.
+      if (currentPageStart + currentPageSize - 1 > results.length) {
+        currentPageSize = results.length - currentPageStart;
+      }
+      const resultsToshow = results.slice(
+        currentPageStart,
+        currentPageStart + currentPageSize
+      );
+      console.log("resultsToshow");
+      console.log(resultsToshow);
+      setCurrentPage(resultsToshow);
+    } else {
+      setCurrentPage([]);
+    }
+  };
   const [headerData, setHeaderData] = useState(mainProperties);
   const additionalProperties = calculateAdditionalProperties();
   let selectedAdditionalProperties = [];
-  function calculateHeaderData() {
 
+  function calculateHeaderData() {
     let allProperties = mainProperties;
-    if (selectedAdditionalProperties !== undefined && selectedAdditionalProperties && selectedAdditionalProperties.length >0) {
+    if (
+      selectedAdditionalProperties !== undefined &&
+      selectedAdditionalProperties &&
+      selectedAdditionalProperties.length > 0
+    ) {
       console.log("selectedAdditionalProperties.selectedItems 1");
       console.log(selectedAdditionalProperties);
       allProperties = mainProperties.concat(selectedAdditionalProperties);
-
-    }  
+    }
     console.log("allProperties 1");
     console.log(allProperties);
     setHeaderData(allProperties);
@@ -59,14 +118,14 @@ const NodeSearch = (props) => {
     console.log(items.selectedItems);
     selectedAdditionalProperties = [];
     const selectedItems = items.selectedItems;
-    for (let i=0;i < selectedItems.length; i++) {
+    for (let i = 0; i < selectedItems.length; i++) {
       let item = {};
       item.key = selectedItems[i].id;
-      item.text= selectedItems[i].text;
+      item.text = selectedItems[i].text;
       selectedAdditionalProperties.push(item);
     }
     // render the table by recalculating the header state based on the new values
-    calculateHeaderData(); 
+    calculateHeaderData();
   };
   function calculateAdditionalProperties() {
     let items = [];
@@ -84,21 +143,26 @@ const NodeSearch = (props) => {
     });
     return items;
   }
-
-  const isSelectedNode = () => {
-    let isSelected = false;
-    if (glossaryAuthorContext.selectedNode) {
-      isSelected = true;
-    }
-    return isSelected;
+  const batchActionClick = (selectedRows) => {
+    console.log("batchActionClick" + selectedRows);
   };
-
+  const handleAdd = (e) => {
+    console.log("handleAdd" + e);
+  };
+  const handleDelete = (e) => {
+    console.log("handleDelete" + e);
+  };
+  const handleEdit = (e) => {
+    console.log("handleEdit" + e);
+  };
   const handleOnChange = (e) => {
     e.preventDefault();
     if (e.target.value && e.target.value.length > 0) {
+      setPageNumber(1);
+      setTotal(0);
       const fetchUrl =
         glossaryAuthorContext.currentNodeType.url +
-        "?searchCriteria=" +
+        "?offset=0&pageSize=1000&searchCriteria=" +
         e.target.value;
       fetch(fetchUrl, {
         method: "get",
@@ -135,6 +199,8 @@ const NodeSearch = (props) => {
                 return row;
               });
               setResults(nodeRows);
+              setCurrentPage(nodeRows.slice(0, pageSize));
+              setTotal(nodeRows.length);
             } else {
               // no results
               setResults([]);
@@ -157,7 +223,7 @@ const NodeSearch = (props) => {
               <div class="bx--form-item">
                 <div style={{ width: 150 }}>
                   <MultiSelect
-                    onChange= {onAdditionalAttributesChanged} 
+                    onChange={onAdditionalAttributesChanged}
                     items={additionalProperties}
                     itemToString={(item) => (item ? item.text : "")}
                   />
@@ -215,7 +281,7 @@ const NodeSearch = (props) => {
       </div>
       <DataTable
         isSortable
-        rows={results}
+        rows={currentPage}
         headers={headerData}
         render={({
           rows,
@@ -223,10 +289,37 @@ const NodeSearch = (props) => {
           getHeaderProps,
           getSelectionProps,
           getRowProps,
+          getBatchActionProps,
+          onInputChange,
+          selectedRows,
         }) => (
           <TableContainer
             title={glossaryAuthorContext.currentNodeType.typeName}
           >
+            <TableToolbar>
+              {/* make sure to apply getBatchActionProps so that the bar renders */}
+              <TableBatchActions {...getBatchActionProps()}>
+                {/* inside of you batch actions, you can include selectedRows */}
+                <TableBatchAction
+                  primaryFocus
+                  onClick={handleDelete(selectedRows)}
+
+                >
+                  Delete
+                </TableBatchAction>
+                <TableBatchAction
+                 onClick={handleEdit(selectedRows)}
+                >
+                  Edit
+                </TableBatchAction>
+              </TableBatchActions>
+              <TableToolbarSearch onChange={onInputChange} />
+              <TableToolbarContent>
+                <Button onClick={handleAdd} small kind="primary">
+                  Add new
+                </Button>
+              </TableToolbarContent>
+            </TableToolbar>
             <Table>
               <TableHead>
                 <TableRow>
@@ -252,6 +345,7 @@ const NodeSearch = (props) => {
           </TableContainer>
         )}
       />
+      <Pagination {...paginationProps()} />
     </div>
   );
 };
