@@ -53,7 +53,6 @@ public abstract class SubjectAreaHandler {
     protected static final String PROJECT_SCOPE_RELATIONSHIP_NAME = "ProjectScope";
     protected static final String CATEGORY_ANCHOR_RELATIONSHIP_NAME = "CategoryAnchor";
     protected static final String CATEGORY_HIERARCHY_LINK_RELATIONSHIP_NAME ="CategoryHierarchyLink";
-    protected static final String TERM_CATEGORIZATION_RELATIONSHIP_NAME ="TermCategorization";
 
     protected final MappersFactory mappersFactory;
     protected final OMRSAPIHelper oMRSAPIHelper;
