@@ -2463,11 +2463,7 @@
                 <artifactId>open-metadata-labs</artifactId>
                 <version>${open-metadata.version}</version>
             </dependency>
-            <dependency>
-                <groupId>org.odpi.egeria</groupId>
-                <artifactId>presentation-server</artifactId>
-                <version>${open-metadata.version}</version>
-            </dependency>
+
             <dependency>
                 <groupId>org.odpi.egeria</groupId>
                 <artifactId>discovery-service-sample</artifactId>
@@ -3238,7 +3234,6 @@
                         <exclude>**/**.code-workspace</exclude>
                         <exclude>config</exclude>
                         <exclude>**/LICENSE*.txt</exclude>
-                        <exclude>**/presentation-server/**</exclude>
                         <exclude>data/**</exclude>
                     </excludes>
                     <licenseFamilies>
