@@ -51,7 +51,7 @@ public class Node implements Serializable, OmasObject {
     private String description =null;
     protected List<Classification> classifications = null;
     private Set<IconSummary> icons = null;
-    private Map<String,String> additionalProperties;
+    private Map<String,String> additionalProperties = null;
 
     /**
      * Node type

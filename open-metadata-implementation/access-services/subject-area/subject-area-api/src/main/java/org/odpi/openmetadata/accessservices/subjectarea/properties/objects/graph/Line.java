@@ -53,17 +53,18 @@ abstract public class Line implements Serializable, OmasObject {
     private SystemAttributes systemAttributes = null;
     private Date effectiveFromTime = null;
     private Date effectiveToTime = null;
-    private Map<String, String> additionalProperties;
-    protected String typeDefGuid;
-    protected LineType lineType;
+    private Map<String, String> additionalProperties = null;
+    protected String typeDefGuid = null;
+    protected LineType lineType = null;
     // this is the line name
-    protected String name;
-    protected LineEnd end1;
-    protected LineEnd end2;
+    protected String name = null;
+    protected LineEnd end1 = null;
+    protected LineEnd end2 = null;;
 
     protected Line(String name, String typeDefGuid, LineEnd end1, LineEnd end2) {
-        this.end1 = end1;
-        this.end2 = end2;
+        // use the copy constructor to ensure that a new java object is created
+        this.end1 = new LineEnd(end1);
+        this.end2 = new LineEnd(end2);
         this.name = name;
         this.typeDefGuid = typeDefGuid;
         initialise();
