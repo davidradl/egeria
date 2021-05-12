@@ -143,7 +143,7 @@ allprojects {
             implementation("org.apache.lucene:lucene-queryparser:${luceneVersion}")
             implementation("org.apache.lucene:lucene-spatial:8.4.1")
             implementation("org.apache.lucene:lucene-spatial-extras:${luceneVersion}")
-            implementation("org.apache.ranger:ranger-plugins-common:1.2.0")
+            implementation("org.apache.ranger:ranger-plugins-common:2.1.0")
             implementation("org.apache.tinkerpop:tinkergraph-gremlin:${gremlinVersion}")
             implementation("org.apache.tinkerpop:gremlin-driver:${gremlinVersion}")
             implementation("org.apache.tinkerpop:gremlin-core:${gremlinVersion}")
