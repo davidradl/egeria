@@ -137,7 +137,7 @@ allprojects {
             implementation("org.apache.httpcomponents:httpcore:${httpcoreVersion}")
             implementation("org.apache.httpcomponents:httpcore-nio:${httpcoreVersion}")
             implementation("org.apache.httpcomponents:httpcore-osgi:${httpcoreVersion}")
-            implementation("org.apache.jena:jena-core:3.17.0")
+            implementation("org.apache.jena:jena-core:4.1.0")
             implementation("org.apache.kafka:kafka-clients:2.8.0")
             implementation("org.apache.lucene:lucene-core:${luceneVersion}")
             implementation("org.apache.lucene:lucene-analyzers-common:${luceneVersion}")
